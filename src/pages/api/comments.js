@@ -22,6 +22,7 @@ const handle = mw({
         ...body,
         userId: user.id,
       })
+
       send(newComment)
     },
   ],
@@ -31,15 +32,9 @@ const handle = mw({
         page: pageValidator.required(),
       },
     }),
-    async ({
-      send,
-      input: {
-        query: { page },
-      },
-      models: { CommentModel },
-    }) => {
+    async ({ send, models: { CommentModel } }) => {
       const query = CommentModel.query()
-      const comments = await query.clone().withGraphFetched("user").page(page)
+      const comments = await query.clone().withGraphFetched("user")
       const [{ count }] = await query.clone().count()
 
       send(sanitizeComments(comments), { count })

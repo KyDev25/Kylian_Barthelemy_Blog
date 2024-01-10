@@ -10,6 +10,7 @@ import SubmitButton from "@/web/components/ui/SubmitButton"
 import { createResource } from "@/web/services/apiClient"
 import { useMutation } from "@tanstack/react-query"
 import { Formik } from "formik"
+import { useRouter } from "next/router"
 import { object } from "yup"
 
 const initialValues = {
@@ -25,11 +26,13 @@ const validationSchema = object({
   lastName: lastNameValidator.required().label("Last Name"),
 })
 const SignUpPage = () => {
+  const router = useRouter()
   const { mutateAsync } = useMutation({
     mutationFn: (data) => createResource("users", data),
   })
   const handleSubmit = async ({ email, password, firstName, lastName }) => {
     await mutateAsync({ email, password, firstName, lastName })
+    router.push(`/sign-in`)
   }
 
   return (

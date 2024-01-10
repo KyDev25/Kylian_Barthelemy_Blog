@@ -3,6 +3,7 @@ import mw from "@/api/mw"
 import auth from "@/api/middlewares/auth"
 import { articleValidator, pageValidator } from "@/utils/validators"
 import sanitizePosts from "@/pages/api/utils/sanitizePosts"
+import checkPerms from "@/api/middlewares/checkPerms"
 
 const handle = mw({
   POST: [
@@ -12,6 +13,7 @@ const handle = mw({
       },
     }),
     auth,
+    checkPerms(),
     async ({ send, input: { body }, models: { PostModel }, user }) => {
       const newPost = await PostModel.query().insertAndFetch({
         ...body,
@@ -26,18 +28,11 @@ const handle = mw({
         page: pageValidator.required(),
       },
     }),
-    async ({
-      send,
-      input: {
-        query: { page },
-      },
-      models: { PostModel },
-    }) => {
+    async ({ send, models: { PostModel } }) => {
       const query = PostModel.query()
       const posts = await query
         .clone()
         .withGraphFetched("[comments.[user],user]")
-        .page(page)
       const [{ count }] = await query.clone().count()
 
       send(sanitizePosts(posts), { count })

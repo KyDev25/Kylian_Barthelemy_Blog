@@ -1,5 +1,6 @@
 import validate from "@/api/middlewares/validate"
 import mw from "@/api/mw"
+import CommentModel from "@/db/models/CommentModel"
 import sanitizePost from "@/pages/api/utils/sanitizePost"
 import { idValidator, articleValidator } from "@/utils/validators"
 
@@ -21,8 +22,10 @@ const handle = mw({
         .findById(postId)
         .withGraphFetched("[comments.[user],user]")
         .throwIfNotFound()
-
-      send(sanitizePost(post))
+      const [{ count }] = await CommentModel.query()
+        .where("postId", postId)
+        .count()
+      send(sanitizePost(post), { count })
     },
   ],
   PATCH: [

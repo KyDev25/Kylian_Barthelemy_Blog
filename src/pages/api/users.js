@@ -1,3 +1,5 @@
+import auth from "@/api/middlewares/auth"
+import checkPerms from "@/api/middlewares/checkPerms"
 import validate from "@/api/middlewares/validate"
 import mw from "@/api/mw"
 import hashPassword from "@/db/hashPassword"
@@ -58,15 +60,11 @@ const handle = mw({
         page: pageValidator.required(),
       },
     }),
-    async ({
-      send,
-      input: {
-        query: { page },
-      },
-      models: { UserModel },
-    }) => {
+    auth,
+    checkPerms(true, false),
+    async ({ send, models: { UserModel } }) => {
       const query = UserModel.query()
-      const users = await query.clone().page(page)
+      const users = await query.clone()
       const [{ count }] = await query.clone().count()
 
       send(sanitizeUsers(users), { count })

@@ -1,4 +1,4 @@
-import { ValidationError, boolean, number, object, string } from "yup"
+import { ValidationError, boolean, object, string } from "yup"
 
 const validationSchema = object({
   security: object({
@@ -8,10 +8,6 @@ const validationSchema = object({
         secure: boolean().required(),
       }).noUnknown(),
     }).noUnknown(),
-  }).noUnknown(),
-  pagination: object({
-    limit: number().max(20).required(),
-    maxDisplayed: number().max(5).required(),
   }).noUnknown(),
 })
 let config = null
@@ -26,10 +22,6 @@ try {
             secure: process.env.NODE_ENV !== "development",
           },
         },
-      },
-      pagination: {
-        limit: 5,
-        maxDisplayed: 3,
       },
     },
     { abortEarly: false }

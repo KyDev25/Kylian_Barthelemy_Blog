@@ -6,12 +6,11 @@ import jsonwebtoken from "jsonwebtoken"
 const auth = async (ctx) => {
   const {
     req: {
-      headers: { authorization },
+      headers: { authorization: token },
       cookies: { [webConfig.security.session.cookie.key]: cookies },
     },
     next,
   } = ctx
-  const [, token] = authorization.split(" ")
   const {
     payload: { user },
   } = jsonwebtoken.verify(token, config.security.jwt.secret)

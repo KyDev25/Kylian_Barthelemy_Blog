@@ -38,6 +38,10 @@ const handle = mw({
         throw new HttpAuthenticationError()
       }
 
+      if (!user.isActive) {
+        throw new HttpAuthenticationError()
+      }
+
       const [passwordHash] = await hashPassword(password, user.passwordSalt)
 
       if (passwordHash !== user.passwordHash) {
@@ -49,6 +53,9 @@ const handle = mw({
           payload: {
             user: {
               id: user.id,
+              isActive: user.isActive,
+              isAuthor: user.isAuthor,
+              isAdmin: user.isAdmin,
             },
           },
         },
